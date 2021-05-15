@@ -5,8 +5,8 @@
 std::vector<std::unique_ptr<Opponent>> &Game::GetOpponents() {
   return Villian_;
 }
-std::vector<std::unique_ptr<OpponentProjectile>>
-    &Game::GetOpponentProjectiles() {
+std::vector<std::unique_ptr<OpponentProjectile>> &
+Game::GetOpponentProjectiles() {
   return Beam_;
 }
 std::vector<std::unique_ptr<PlayerProjectile>> &Game::GetPlayerProjectiles() {
@@ -52,13 +52,13 @@ void Game::FilterIntersections() {
       lost_ = true;
     } else {
       for (int j = 0; j < Hero_Projectile_.size(); j++) {
-        if (Beam_[i]->GetIsActive() && Hero_Projectile_[j]->GetIsActive() &&
+        if (Villian_[i]->GetIsActive() && Hero_Projectile_[j]->GetIsActive() &&
             Hero_Projectile_[j]->IntersectsWith(Villian_[i].get())) {
-          Villian_[i]->SetIsActive(false);
-          Hero_Projectile_[j]->SetIsActive(false);
           if (Hero_.GetIsActive()) {
             score_ += 1;
           }
+          Villian_[i]->SetIsActive(false);
+          Hero_Projectile_[j]->SetIsActive(false);
         }
       }
     }
