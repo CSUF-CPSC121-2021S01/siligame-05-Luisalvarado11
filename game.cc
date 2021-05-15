@@ -1,167 +1,78 @@
-#include "game.h"
 #include <iostream>
 #include <vector>
+#include "cpputils/graphics/image_event.h"
+#include "game_element.h"
+#include "opponent.h"
+#include "player.h"
 
-std::vector<std::unique_ptr<Opponent>> &Game::GetOpponents() {
-  return Villian_;
-}
-std::vector<std::unique_ptr<OpponentProjectile>> &
-Game::GetOpponentProjectiles() {
-  return Beam_;
-}
-std::vector<std::unique_ptr<PlayerProjectile>> &Game::GetPlayerProjectiles() {
-  return Hero_Projectile_;
-}
-Player &Game::GetPlayer() { return Hero_; }
-graphics::Image &Game::GetGameScreen() { return GameBoard_; }
+#ifndef GAME_H
+#define GAME_H
 
-int Game::GetScore() { return score_; }
-bool Game::HasLost() { return lost_; }
+class Game : public graphics::AnimationEventListener,
+             public graphics::MouseEventListener {
+ private:
+  graphics::Image GameBoard_;
+  std::vector<std::unique_ptr<Opponent>> Villian_;
+  std::vector<std::unique_ptr<OpponentProjectile>> Beam_;
+  std::vector<std::unique_ptr<PlayerProjectile>> Hero_Projectile_;
+  Player Hero_;
 
-void Game::CreateOpponents() {
-  Opponent Villian;
-  Villian.SetX(345);
-  Villian.SetY(75);
-  Villian_.push_back(std::make_unique<Opponent>(Villian));
-}
+  int width_;
+  int height_;
+  int score_ = 0;
+  bool lost_;
 
-void Game::Init() {
-  Hero_.SetX(350);
-  Hero_.SetY(500);
+ public:
+  // default constructor and non-default constructor
+  Game() : GameBoard_(800, 600) {}
+  Game(int width, int height)
+      : width_(width), height_(height), GameBoard_(width, height) {}
 
-  GameBoard_.AddMouseEventListener(*this);
-  GameBoard_.AddAnimationEventListener(*this);
-}
+  std::vector<std::unique_ptr<Opponent>> &GetOpponents();
+  std::vector<std::unique_ptr<OpponentProjectile>> &GetOpponentProjectiles();
+  std::vector<std::unique_ptr<PlayerProjectile>> &GetPlayerProjectiles();
+  Player &GetPlayer();
+  graphics::Image &GetGameScreen();
 
-void Game::LaunchProjectiles() {
-  for (int i = 0; i < Villian_.size(); i++) {
-    std::unique_ptr<OpponentProjectile> Opponent_P =
-        Villian_[i]->LaunchProjectile();
-    if (Opponent_P != nullptr) {
-      Beam_.push_back(std::move(Opponent_P));
-    }
-  }
-}
+  void CreateOpponents();
+  void CreateOpponentProjectiles();
+  void CreatePlayerProjectiles();
+  void Init();
+  void UpdateScreen();
+  void Start();
 
-void Game::FilterIntersections() {
-  for (int i = 0; i < Villian_.size(); i++) {
-    if (Villian_[i]->GetIsActive() && Hero_.GetIsActive() &&
-        Hero_.IntersectsWith(Villian_[i].get())) {
-      Villian_[i]->SetIsActive(false);
-      Hero_.SetIsActive(false);
-      lost_ = true;
-    } else {
-      for (int j = 0; j < Hero_Projectile_.size(); j++) {
-        if (Beam_[i]->GetIsActive() && Hero_Projectile_[j]->GetIsActive() &&
-            Hero_Projectile_[j]->IntersectsWith(Villian_[i].get())) {
-          Villian_[i]->SetIsActive(false);
-          Hero_Projectile_[j]->SetIsActive(false);
-          if(Hero_.GetIsActive()) {
-            score_ += 1;
-          }
-        }
-      }
-    }
-  }
-  for (int i = 0; i < Beam_.size(); i++) {
-    if (Beam_[i]->GetIsActive() && Hero_.GetIsActive() &&
-        Hero_.IntersectsWith(Beam_[i].get())) {
-      Beam_[i]->SetIsActive(false);
-      Hero_.SetIsActive(false);
-      lost_ = true;
-    }
-  }
-}
+  int GetScore();
+  bool HasLost();
 
-void Game::UpdateScreen() {
-  GameBoard_.DrawRectangle(0, 0, 800, 600, 255, 255, 255);
-  GameBoard_.DrawText(10, 10, "Score: " + std::to_string(score_), 25, 0, 0, 0);
-  GameBoard_.DrawText(250, 250, "GAME OVER", 70,
-                      graphics::Color(255, 255, 255));
+  // added part 4
+  //@breif: Function should call the move function of every Opponent,
+  // OpponentProjectile, and PlayerProjectile object if it is active
+  //@param: does not accept any parameters
+  //@return: returns void
+  void MoveGameElements();
 
-  if (Hero_.GetIsActive()) {
-    Hero_.Draw(GameBoard_);
-  }
+  void LaunchProjectiles();
 
-  for (int i = 0; i < Villian_.size(); i++) {
-    if (Villian_[i]->GetIsActive()) {
-      Villian_[i]->Draw(GameBoard_);
-    }
-  }
+  //@breif: Function deactivates opponents that intersect with the player and
+  // player projectiles that intersect with the opponents and players.
+  //@param: function does not accept any parameters.
+  //@return: nothing, void
+  void FilterIntersections();
 
-  for (int i = 0; i < Beam_.size(); i++) {
-    if (Beam_[i]->GetIsActive()) {
-      Beam_[i]->Draw(GameBoard_);
-    }
-  }
+  void RemoveInactive();
 
-  for (int i = 0; i < Hero_Projectile_.size(); i++) {
-    if (Hero_Projectile_[i]->GetIsActive()) {
-      Hero_Projectile_[i]->Draw(GameBoard_);
-    }
-  }
-}
+  //@breif:Function will be called everytime you move or click the mouse and
+  // will be used to control the player. The function accepts a
+  // graphics::MouseEvent object that describes the action.
+  //@param: nothing
+  //@return void.
+  void OnAnimationStep();
 
-void Game::MoveGameElements() {
-  for (int i = 0; i < Villian_.size(); i++) {
-    Villian_[i]->Move(GameBoard_);
-  }
-  for (int j = 0; j < Beam_.size(); j++) {
-    Beam_[j]->Move(GameBoard_);
-  }
-  for (int i = 0; i < Hero_Projectile_.size(); i++) {
-    Hero_Projectile_[i]->Move(GameBoard_);
-  }
-}
-
-void Game::RemoveInactive() {
-  for (int i = 0; i < Villian_.size(); i++) {
-    if (Villian_[i]->GetIsActive() == false) {
-      Villian_.erase(Villian_.begin() + i);
-      i--;
-    }
-  }
-  for (int j = 0; j < Beam_.size(); j++) {
-    if (Beam_[j]->GetIsActive() == false) {
-      Beam_.erase(Beam_.begin() + j);
-      j--;
-    }
-  }
-  for (int k = 0; k < Hero_Projectile_.size(); k++) {
-    if (Hero_Projectile_[k]->GetIsActive() == false) {
-      Hero_Projectile_.erase(Hero_Projectile_.begin() + k);
-      k--;
-    }
-  }
-}
-
-void Game::Start() { GameBoard_.ShowUntilClosed("Canvas"); }
-
-void Game::OnMouseEvent(const graphics::MouseEvent &mouse) {
-  if (mouse.GetMouseAction() == graphics::MouseAction::kMoved ||
-      mouse.GetMouseAction() == graphics::MouseAction::kDragged) {
-    if (mouse.GetX() < GameBoard_.GetWidth() &&
-        mouse.GetY() < GameBoard_.GetHeight()) {
-      Hero_.SetX(mouse.GetX() - Hero_.GetWidth() / 2);
-      Hero_.SetY(mouse.GetY() - Hero_.GetHeight() / 2);
-    }
-  }
-  if (mouse.GetMouseAction() == graphics::MouseAction::kPressed ||
-      mouse.GetMouseAction() == graphics::MouseAction::kDragged) {
-    std::unique_ptr<PlayerProjectile> Opp_ =
-        std::make_unique<PlayerProjectile>(mouse.GetX(), mouse.GetY());
-    Hero_Projectile_.push_back(std::move(Opp_));
-  }
-}
-
-void Game::OnAnimationStep() {
-  if (Villian_.size() == 0) {
-    CreateOpponents();
-  }
-  MoveGameElements();
-  LaunchProjectiles();
-  FilterIntersections();
-  RemoveInactive();
-  UpdateScreen();
-  GameBoard_.Flush();
-}
+  //@breif: FUnction will be called every time you move or click the mouse and
+  // will be used to control the player.
+  //@param:accepts a graphics::MouseEvent object
+  //@return: void type. returns a graphics::MouseAction enumeration that
+  // indicates whether the mouse was moved.
+  void OnMouseEvent(const graphics::MouseEvent &mouse);
+};
+#endif
