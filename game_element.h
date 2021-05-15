@@ -1,5 +1,5 @@
-#include "cpputils/graphics/image.h"
 #include <iostream>
+#include "cpputils/graphics/image.h"
 
 #ifndef GAME_ELEMENT_H
 #define GAME_ELEMENT_H
