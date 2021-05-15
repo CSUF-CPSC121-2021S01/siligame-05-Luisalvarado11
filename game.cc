@@ -5,8 +5,8 @@
 std::vector<std::unique_ptr<Opponent>> &Game::GetOpponents() {
   return Villian_;
 }
-std::vector<std::unique_ptr<OpponentProjectile>> &
-Game::GetOpponentProjectiles() {
+std::vector<std::unique_ptr<OpponentProjectile>>
+    &Game::GetOpponentProjectiles() {
   return Beam_;
 }
 std::vector<std::unique_ptr<PlayerProjectile>> &Game::GetPlayerProjectiles() {
