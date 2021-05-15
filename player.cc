@@ -1,7 +1,7 @@
+#include "player.h"
 #include <iostream>
 #include "cpputils/graphics/image.h"
 #include "opponent.h"
-#include "player.h"
 
 //@breif: Function that draws the Image, based on its width(50) and height(50);
 //@param: Takes an Referance Image
