@@ -76,14 +76,13 @@ void Game::FilterIntersections() {
 void Game::UpdateScreen() {
   GameBoard_.DrawRectangle(0, 0, 800, 600, 255, 255, 255);
   GameBoard_.DrawText(10, 10, "Score: " + std::to_string(score_), 25, 0, 0, 0);
+  GameBoard_.DrawText(250, 250, "GAME OVER", 70,
+                      graphics::Color(255, 255, 255));
 
   if (Hero_.GetIsActive()) {
     Hero_.Draw(GameBoard_);
-  } else {
-    GameBoard_.DrawText(250, 250, "GAME OVER", 70,
-                      graphics::Color(255, 255, 255));
-  }
-
+  } 
+  
   for (int i = 0; i < Villian_.size(); i++) {
     if (Villian_[i]->GetIsActive()) {
       Villian_[i]->Draw(GameBoard_);
