@@ -80,8 +80,7 @@ void Game::UpdateScreen() {
   if (Hero_.GetIsActive()) {
     Hero_.Draw(GameBoard_);
   } else {
-    GameBoard_.DrawText(200, 200, "GAME OVER", 70,
-                        graphics::Color(255, 255, 255));
+    GameBoard_.DrawText(250, 250, "GAME OVER", 70, graphics::Color(0, 0, 0));
   }
 
   for (int i = 0; i < Villian_.size(); i++) {
@@ -117,19 +116,19 @@ void Game::MoveGameElements() {
 
 void Game::RemoveInactive() {
   for (int i = 0; i < Villian_.size(); i++) {
-    if ((Villian_[i]->GetIsActive() != true)) {
+    if (Villian_[i]->GetIsActive() == false) {
       Villian_.erase(Villian_.begin() + i);
       i--;
     }
   }
   for (int j = 0; j < Beam_.size(); j++) {
-    if (Beam_[j]->GetIsActive() != true) {
+    if (Beam_[j]->GetIsActive() == false) {
       Beam_.erase(Beam_.begin() + j);
       j--;
     }
   }
   for (int k = 0; k < Hero_Projectile_.size(); k++) {
-    if (Hero_Projectile_[k]->GetIsActive() != true) {
+    if (Hero_Projectile_[k]->GetIsActive() == false) {
       Hero_Projectile_.erase(Hero_Projectile_.begin() + k);
       k--;
     }
