@@ -116,19 +116,19 @@ void Game::MoveGameElements() {
 
 void Game::RemoveInactive() {
   for (int i = 0; i < Villian_.size(); i++) {
-    if (Villian_[i]->GetIsActive() == false) {
+    if ((Villian_[i]->GetIsActive() != true)) {
       Villian_.erase(Villian_.begin() + i);
       i--;
     }
   }
   for (int j = 0; j < Beam_.size(); j++) {
-    if (Beam_[j]->GetIsActive() == false) {
+    if (Beam_[j]->GetIsActive() != true) {
       Beam_.erase(Beam_.begin() + j);
       j--;
     }
   }
   for (int k = 0; k < Hero_Projectile_.size(); k++) {
-    if (Hero_Projectile_[k]->GetIsActive() == false) {
+    if (Hero_Projectile_[k]->GetIsActive() != true) {
       Hero_Projectile_.erase(Hero_Projectile_.begin() + k);
       k--;
     }
