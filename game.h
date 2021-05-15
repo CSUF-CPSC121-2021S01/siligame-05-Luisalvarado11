@@ -1,9 +1,9 @@
+#include <iostream>
+#include <vector>
 #include "cpputils/graphics/image_event.h"
 #include "game_element.h"
 #include "opponent.h"
 #include "player.h"
-#include <iostream>
-#include <vector>
 
 #ifndef GAME_H
 #define GAME_H
